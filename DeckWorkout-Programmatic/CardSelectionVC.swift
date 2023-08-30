@@ -13,9 +13,13 @@ class CardSelectionVC: UIViewController {
     let resetButton = DWButton(backgroundColor: .systemGreen, title: "Reset")
     let rulesButton = DWButton(backgroundColor: .systemBlue, title: "Rules")
 
+    var cards = Card.allValues
+    var timer: Timer!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        startTimer()
         configureUI()
     }
 
@@ -29,7 +33,7 @@ class CardSelectionVC: UIViewController {
     func configureCardImageView() {
         view.addSubview(cardImageView)
         cardImageView.translatesAutoresizingMaskIntoConstraints = false
-        cardImageView.image = UIImage(named: "AS")
+        cardImageView.image = cards.randomElement()
 
         NSLayoutConstraint.activate([
             cardImageView.widthAnchor.constraint(equalToConstant: 250),
@@ -41,6 +45,7 @@ class CardSelectionVC: UIViewController {
 
     func configureStopButton() {
         view.addSubview(stopButton)
+        stopButton.addTarget(self, action: #selector(stopButtonTapped), for: .touchUpInside)
 
         NSLayoutConstraint.activate([
             stopButton.widthAnchor.constraint(equalToConstant: 260),
@@ -52,6 +57,7 @@ class CardSelectionVC: UIViewController {
 
     func configureResetButton() {
         view.addSubview(resetButton)
+        resetButton.addTarget(self, action: #selector(resetTimer), for: .touchUpInside)
 
         NSLayoutConstraint.activate([
             resetButton.widthAnchor.constraint(equalToConstant: 115),
@@ -71,6 +77,23 @@ class CardSelectionVC: UIViewController {
             rulesButton.trailingAnchor.constraint(equalTo: stopButton.trailingAnchor),
             rulesButton.topAnchor.constraint(equalTo: stopButton.bottomAnchor, constant: 20)
         ])
+    }
+
+    func startTimer() {
+        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(showRandomImage), userInfo: nil, repeats: true)
+    }
+
+    @objc func showRandomImage() {
+        cardImageView.image = cards.randomElement()
+    }
+
+    @objc func stopButtonTapped() {
+        timer.invalidate()
+    }
+
+    @objc func resetTimer() {
+        timer.invalidate()
+        startTimer()
     }
 
     @objc func presentRulesVC() {
